@@ -1,152 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DEAD SIGNAL</title>
-<link href="style.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEAD SIGNAL</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <div class="intro-logo">DEAD SIGNAL</div>
-  <div class="intro-sub">EMERGENCY BROADCAST SYSTEM</div>
-  <div class="intro-desc">
-    Fourteen months ago, people stopped gathering.<br>
-    Cities emptied. Silence spread.<br><br>
-    You are alone in a radio station.<br>
-    The transmitters still work.<br><br>
-    Find out what happened.
+  <!-- ============================================================
+       INTRO SCREEN
+       ============================================================ -->
+  <div id="intro">
+    <div class="intro-logo">DEAD SIGNAL</div>
+    <div class="intro-sub">EMERGENCY BROADCAST SYSTEM — UPTIME: 14 MONTHS</div>
+    <div class="intro-desc">
+      Fourteen months ago, people stopped gathering.<br>
+      Cities emptied. Governments fell quiet.<br>
+      A few voices remain on the dial.<br><br>
+      You are alone in a radio station.<br>
+      Find out what happened.
+    </div>
+    <div class="intro-buttons">
+      <button class="btn" onclick="startGame(false)"
+        style="font-size:14px;padding:10px 28px;letter-spacing:3px;">
+        POWER ON
+      </button>
+      <button class="btn danger" id="continue-btn" onclick="startGame(true)"
+        style="display:none;font-size:14px;padding:10px 28px;letter-spacing:3px;">
+        CONTINUE
+      </button>
+    </div>
+    <div id="intro-save-note" style="margin-top:14px;font-size:10px;color:var(--text-dim);"></div>
   </div>
-  <button class="btn" onclick="startGame()" style="font-size:14px;padding:10px 32px;letter-spacing:3px;">
-    POWER ON
-  </button>
-</div>
 
-<div id="main-content">
-<div id="app">
-
-  <div class="header">
-    <div class="logo">DEAD SIGNAL</div>
-    <div class="day-counter">
-      IN-GAME DAY<span id="day-display">1</span>
+  <!-- ============================================================
+       NEW GAME+ CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="ng-confirm">
+    <div class="ng-box">
+      <h3>NEW GAME+</h3>
+      <p>
+        Your current run will be saved to the Journal.<br>
+        A new playthrough begins. Signals carry deeper lore.<br>
+        Some frequencies reveal what was hidden before.<br><br>
+        Nothing is lost. Everything changes.
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="confirmNewGame()">[ BEGIN ]</button>
+        <button class="btn" onclick="document.getElementById('ng-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('radio')">[ RADIO ]</button>
-    <button class="tab" onclick="switchTab('archive')">[ ARCHIVE ] <span id="archive-count" style="color:var(--green-dim)"></span></button>
-    <button class="tab" onclick="switchTab('ending')">[ CONCLUSIONS ]</button>
-  </div>
+  <!-- ============================================================
+       MAIN GAME CONTENT
+       ============================================================ -->
+  <div id="main-content">
+    <div id="app">
 
-  <!-- RADIO SCREEN -->
-  <div class="screen active" id="screen-radio">
-    <div class="radio-layout">
-      <div>
-        <div class="panel">
-          <div class="panel-title">// FREQUENCY TUNER</div>
-
-          <div class="freq-display" id="freq-display">88.0</div>
-
-          <div class="signal-meter" id="signal-meter">
-            <div class="sig-bar" style="height:4px" id="bar0"></div>
-            <div class="sig-bar" style="height:4px" id="bar1"></div>
-            <div class="sig-bar" style="height:4px" id="bar2"></div>
-            <div class="sig-bar" style="height:4px" id="bar3"></div>
-            <div class="sig-bar" style="height:4px" id="bar4"></div>
-            <div class="sig-bar" style="height:4px" id="bar5"></div>
-            <div class="sig-bar" style="height:4px" id="bar6"></div>
+      <!-- Header -->
+      <div class="header">
+        <div class="logo">DEAD SIGNAL</div>
+        <div class="header-right">
+          <span class="ng-badge" id="ng-badge">NG+</span>
+          <div class="day-counter">
+            IN-GAME DAY
+            <span id="day-display">1</span>
           </div>
+        </div>
+      </div>
 
-          <div class="dial-container">
-            <div class="dial-track">
-              <input type="range" id="dial" min="880" max="1220" value="880" step="1"
-                oninput="onDialMove(this.value)">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active"  onclick="switchTab('radio')">[ RADIO ]</button>
+        <button class="tab"         onclick="switchTab('archive')">
+          [ ARCHIVE ] <span id="archive-count" style="color:var(--green-dim)"></span>
+        </button>
+        <button class="tab"         onclick="switchTab('ending')">[ CONCLUSIONS ]</button>
+        <button class="tab"         onclick="switchTab('journal')">
+          [ JOURNAL ] <span id="journal-count" style="color:var(--text-dim)"></span>
+        </button>
+      </div>
+
+      <!-- ======================================================
+           RADIO SCREEN
+           ====================================================== -->
+      <div class="screen active" id="screen-radio">
+        <div class="radio-layout">
+
+          <!-- Left column: tuner + transmission -->
+          <div>
+            <div class="panel">
+              <div class="panel-title">// FREQUENCY TUNER</div>
+
+              <div class="freq-display" id="freq-display">88.0</div>
+
+              <div class="signal-meter" id="signal-meter">
+                <div class="sig-bar" id="bar0"></div>
+                <div class="sig-bar" id="bar1"></div>
+                <div class="sig-bar" id="bar2"></div>
+                <div class="sig-bar" id="bar3"></div>
+                <div class="sig-bar" id="bar4"></div>
+                <div class="sig-bar" id="bar5"></div>
+                <div class="sig-bar" id="bar6"></div>
+              </div>
+
+              <div class="dial-container">
+                <div class="dial-track">
+                  <input
+                    type="range"
+                    id="dial"
+                    min="880"
+                    max="1220"
+                    value="880"
+                    step="1"
+                    oninput="onDialMove(this.value)"
+                  >
+                </div>
+                <div class="dial-labels">
+                  <span>88.0</span>
+                  <span>94.0</span>
+                  <span>100.0</span>
+                  <span>107.0</span>
+                  <span>114.0</span>
+                  <span>122.0</span>
+                </div>
+              </div>
+
+              <div class="audio-row">
+                <button class="btn" id="static-btn" onclick="toggleStatic()">
+                  [ STATIC: ON ]
+                </button>
+              </div>
             </div>
-            <div class="dial-labels">
-              <span>88.0</span><span>94.0</span><span>100.0</span>
-              <span>107.0</span><span>114.0</span><span>122.0</span>
+
+            <div class="panel" style="margin-top:12px;">
+              <div class="panel-title">// INCOMING TRANSMISSION</div>
+              <div class="transmission" id="transmission-box">
+                <span class="static-text">... scanning ... no signal detected ... adjust frequency ...</span>
+              </div>
+              <div class="log-btn-row" id="log-row" style="display:none;">
+                <button class="btn" id="log-btn" onclick="logCurrentFragment()">
+                  [ LOG TO ARCHIVE ]
+                </button>
+                <span class="logged-badge" id="logged-indicator"></span>
+              </div>
+            </div>
+
+            <div class="next-day-row">
+              <button class="btn danger" onclick="advanceDay()">[ NEXT DAY &#8594; ]</button>
+              <div class="next-day-note">
+                Advance time to unlock new transmissions.<br>
+                Some signals go silent. Some appear.
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn secret" id="ng-btn" style="display:none;" onclick="showNGConfirm()">
+                [ NEW GAME+ ]
+              </button>
             </div>
           </div>
 
-          <div class="audio-row">
-            <button class="btn" id="static-btn" onclick="toggleStatic()">[ STATIC: ON ]</button>
-          </div>
-        </div>
+          <!-- Right column: known frequencies + session stats -->
+          <div>
+            <div class="panel">
+              <div class="panel-title">// KNOWN FREQUENCIES</div>
+              <div class="known-signals" id="known-signals-list">
+                <div style="font-size:11px;color:var(--text-dim);">
+                  Scan the dial to discover signals.
+                </div>
+              </div>
+            </div>
 
-        <div class="panel" style="margin-top:12px;">
-          <div class="panel-title">// INCOMING TRANSMISSION</div>
-          <div class="transmission" id="transmission-box">
-            <span class="static-text">... scanning ... no signal detected ... adjust frequency ...</span>
+            <div class="panel" style="margin-top:12px;">
+              <div class="panel-title">// SESSION</div>
+              <div style="font-size:11px;color:var(--text-dim);line-height:2.2;">
+                Fragments: <span id="stat-logged"  style="color:var(--green)">0</span><br>
+                Sources:   <span id="stat-sources" style="color:var(--green)">0</span>/6<br>
+                Days:      <span id="stat-days"    style="color:var(--amber)">1</span><br>
+                Run:       <span id="stat-run"     style="color:var(--amber)">1</span>
+              </div>
+            </div>
           </div>
-          <div class="log-btn-row" id="log-row" style="display:none;">
-            <button class="btn" id="log-btn" onclick="logCurrentFragment()">[ LOG TO ARCHIVE ]</button>
-            <span class="logged-badge" id="logged-indicator"></span>
-          </div>
-        </div>
 
-        <div class="next-day-row">
-          <button class="btn danger" onclick="advanceDay()">[ NEXT DAY &rarr; ]</button>
-          <div class="next-day-note">
-            Some signals only appear on certain days.<br>
-            Advancing cannot be undone.
-          </div>
         </div>
       </div>
 
-      <!-- Right sidebar -->
-      <div>
-        <div class="panel">
-          <div class="panel-title">// KNOWN FREQUENCIES</div>
-          <div class="known-signals" id="known-signals-list">
-            <div style="font-size:11px;color:var(--text-dim);">Scan the dial to discover signals.</div>
+      <!-- ======================================================
+           ARCHIVE SCREEN
+           ====================================================== -->
+      <div class="screen" id="screen-archive">
+        <div class="archive-header">
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">
+            LOGGED TRANSMISSIONS
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="view-btn active" id="vg" onclick="setView('grid')">GRID</button>
+            <button class="view-btn"        id="vt" onclick="setView('timeline')">TIMELINE</button>
           </div>
         </div>
 
-        <div class="panel" style="margin-top:12px;">
-          <div class="panel-title">// SIGNAL STATUS</div>
-          <div id="signal-status" style="font-size:11px;color:var(--text-dim);line-height:2;">
-            Fragments logged: <span id="stat-logged" style="color:var(--green)">0</span><br>
-            Sources found: <span id="stat-sources" style="color:var(--green)">0</span><br>
-            Days elapsed: <span id="stat-days" style="color:var(--amber)">1</span>
-          </div>
+        <div class="archive-filter" id="filter-bar">
+          <button class="filter-btn active" onclick="filterArchive('all')">ALL</button>
         </div>
+
+        <div id="archive-grid"     class="archive-grid"></div>
+        <div id="archive-timeline" class="timeline" style="display:none;"></div>
       </div>
+
+      <!-- ======================================================
+           CONCLUSIONS (ENDINGS) SCREEN
+           ====================================================== -->
+      <div class="screen" id="screen-ending">
+        <div id="ending-content"></div>
+      </div>
+
+      <!-- ======================================================
+           JOURNAL SCREEN
+           ====================================================== -->
+      <div class="screen" id="screen-journal">
+        <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-bottom:16px;">
+          PREVIOUS PLAYTHROUGHS — ARCHIVED PERMANENTLY
+        </div>
+        <div id="journal-grid" class="journal-grid"></div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ARCHIVE SCREEN -->
-  <div class="screen" id="screen-archive">
-    <div class="archive-header">
-      <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">LOGGED TRANSMISSIONS</div>
-      <div class="archive-filter" id="filter-bar">
-        <button class="filter-btn active" onclick="filterArchive('all')">ALL</button>
-      </div>
+  <!-- ============================================================
+       STATUS BAR
+       ============================================================ -->
+  <div class="status-bar">
+    <div>
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">STANDBY — NO SIGNAL</span>
     </div>
-    <div class="archive-grid" id="archive-grid">
-      <div class="empty-archive">
-        No transmissions logged.<br>
-        Return to the radio. Scan the dial.<br>
-        <span style="color:var(--text-dim)">Something is out there.</span>
-      </div>
+    <div>
+      DAY <span id="status-day">1</span> //
+      <span id="status-freq">88.0</span> MHz //
+      RUN <span id="status-run">1</span>
     </div>
   </div>
 
-  <!-- ENDINGS SCREEN -->
-  <div class="screen" id="screen-ending">
-    <div id="ending-content"></div>
-  </div>
-
-</div>
-</div>
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div><span class="status-dot" id="status-dot"></span><span id="status-text">STANDBY — NO SIGNAL</span></div>
-  <div id="status-right">DAY <span id="status-day">1</span> // FREQ <span id="status-freq">88.0</span> MHz</div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
