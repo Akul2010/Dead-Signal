@@ -798,9 +798,10 @@ input[type="range"]::-moz-range-thumb {
   justify-content: center;
 }
 
-/* These reuse .ng-box styles via shared structure */
-#basegame-confirm,
-#reset-confirm {
+/* ============================================================
+   NEW GAME+ CONFIRM MODAL
+   ============================================================ */
+#ng-confirm {
   display: none;
   position: fixed;
   inset: 0;
@@ -810,35 +811,7 @@ input[type="range"]::-moz-range-thumb {
   justify-content: center;
 }
 
-#basegame-confirm.show,
-#reset-confirm.show {
-  display: flex;
-}
-
-/* Ending detail modal — full-screen scrollable */
-#ending-detail-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.92);
-  z-index: 700;
-  align-items: flex-start;
-  justify-content: center;
-  overflow-y: auto;
-  padding: 32px 16px 60px;
-}
-
-#ending-detail-modal.show {
-  display: flex;
-}
-
-.ending-detail-box {
-  background: var(--panel);
-  border: 1px solid var(--border-bright);
-  padding: 28px 32px;
-  max-width: 680px;
-  width: 100%;
-}
+#ng-confirm.show { display: flex; }
 
 .ng-box {
   background: var(--panel);
