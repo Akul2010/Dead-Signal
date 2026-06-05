@@ -156,11 +156,7 @@
               </div>
             </div>
 
-            <div class="action-row">
-              <button class="btn secret" id="ng-btn" style="display:none;" onclick="showNGConfirm()">
-                [ NEW GAME+ ]
-              </button>
-            </div>
+            <!-- NG+ button removed from here, only managed in Conclusions -->
           </div>
 
           <!-- Right column: known frequencies + session stats -->
@@ -245,6 +241,76 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       RESET PROGRESS CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="reset-confirm" class="modal-overlay">
+    <div class="ng-box">
+      <h3>RESET ALL PROGRESS</h3>
+      <p>
+        WARNING: This will permanently delete all your progress, archived runs in the Journal, unlocked endings, and your current save.<br><br>
+        This action cannot be undone. Are you sure you want to proceed?
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="resetAllProgress()">[ RESET ]</button>
+        <button class="btn" onclick="document.getElementById('reset-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RETURN TO BASE GAME CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="base-game-confirm" class="modal-overlay">
+    <div class="ng-box">
+      <h3>RETURN TO BASE GAME</h3>
+      <p>
+        Your current NG+ run will be saved to the Journal.<br>
+        You will return to the base game dial settings.<br><br>
+        Proceed back to the base game?
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="confirmBaseGame()">[ RETURN ]</button>
+        <button class="btn" onclick="document.getElementById('base-game-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       NEXT PLAYTHROUGH CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="next-run-confirm" class="modal-overlay">
+    <div class="ng-box">
+      <h3>BEGIN NEXT PLAYTHROUGH</h3>
+      <p>
+        Your current run will be saved to the Journal.<br>
+        A new playthrough in the base game will begin, allowing you to seek other endings.<br><br>
+        Nothing is lost. Continue search?
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="confirmNextRun()">[ BEGIN ]</button>
+        <button class="btn" onclick="document.getElementById('next-run-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LOG VIEWER MODAL
+       ============================================================ -->
+  <div id="log-viewer-modal" class="modal-overlay">
+    <div class="log-viewer-box">
+      <div class="log-viewer-header">
+        <span id="log-viewer-title">// ARCHIVED TRANSMISSION</span>
+        <button class="close-btn" onclick="document.getElementById('log-viewer-modal').classList.remove('show')">&times;</button>
+      </div>
+      <div id="log-viewer-content" class="log-viewer-body"></div>
+      <div class="log-viewer-footer">
+        <button class="btn" onclick="document.getElementById('log-viewer-modal').classList.remove('show')">[ CLOSE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

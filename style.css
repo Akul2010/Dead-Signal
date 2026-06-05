@@ -851,3 +851,156 @@ input[type="range"]::-moz-range-thumb {
 .src-twins  { color: #ff88cc; }
 .src-beacon { color: #aaaaaa; }
 .src-shan   { color: #cc88cc; }
+
+/* ============================================================
+   NEW MODALS & HOVER STYLES
+   ============================================================ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 600;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+/* Scrollable log viewer modal */
+.log-viewer-box {
+  background: var(--panel);
+  border: 1px solid var(--border-bright);
+  padding: 24px;
+  width: 90%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.log-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+#log-viewer-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 2px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: var(--amber);
+}
+
+.log-viewer-body {
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-bright);
+  white-space: pre-wrap;
+  padding-right: 8px;
+  flex-grow: 1;
+}
+
+.log-viewer-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Hover effects for interactive cards */
+.archive-card {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.archive-card:hover {
+  border-color: var(--green-dim);
+  background: rgba(74, 255, 106, 0.02);
+}
+
+.tl-entry {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.tl-entry:hover {
+  border-color: var(--green-dim);
+  background: rgba(74, 255, 106, 0.02);
+}
+
+.ending-mini.achieved:hover {
+  border-color: var(--green);
+  box-shadow: 0 0 10px rgba(74, 255, 106, 0.15);
+}
+
+/* Unlocked Ending Detail Sub-Page */
+.ending-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.ending-detail-logs-title {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin: 28px 0 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.ending-detail-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ending-log-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 14px;
+}
+
+.ending-log-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.ending-log-text {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-bright);
+  white-space: pre-wrap;
+}
+
+.danger-title {
+  color: var(--amber) !important;
+  text-shadow: 0 0 10px rgba(255, 179, 71, 0.3);
+}
+
