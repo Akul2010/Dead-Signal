@@ -54,6 +54,52 @@
   </div>
 
   <!-- ============================================================
+       RETURN TO BASE GAME CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="basegame-confirm">
+    <div class="ng-box">
+      <h3>RETURN TO BASE</h3>
+      <p>
+        Your current NG+ run will be saved to the Journal.<br>
+        A new base-game playthrough begins.<br>
+        Signals return to their original layer.<br><br>
+        Achievements and journal entries are kept.
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="confirmBaseGame()">[ CONFIRM ]</button>
+        <button class="btn" onclick="document.getElementById('basegame-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RESET ALL PROGRESS CONFIRMATION MODAL
+       ============================================================ -->
+  <div id="reset-confirm">
+    <div class="ng-box">
+      <h3>RESET EVERYTHING</h3>
+      <p>
+        All progress will be permanently deleted.<br>
+        Journal entries, achievements, fragments — all gone.<br><br>
+        This cannot be undone.
+      </p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="confirmReset()">[ DELETE ALL DATA ]</button>
+        <button class="btn" onclick="document.getElementById('reset-confirm').classList.remove('show')">[ CANCEL ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ENDING DETAIL MODAL (click through from conclusions grid)
+       ============================================================ -->
+  <div id="ending-detail-modal">
+    <div class="ending-detail-box">
+      <div id="ending-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        MAIN GAME CONTENT
        ============================================================ -->
   <div id="main-content">

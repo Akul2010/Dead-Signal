@@ -1222,69 +1222,166 @@ function getEndingId() {
   const has = id => L.some(f => f.signalId === id);
   const cnt = id => L.filter(f => f.signalId === id).length;
 
+  // NG+ master ending: requires deep engagement with 4 sources across a NG+ run
   if (ST.ng && has('twins') && has('shan') && cnt('yusra') >= 2 && cnt('mara') >= 2)
     return 'ng_complete';
+
+  // SECRET: must have found and logged at least 2 of Shan's transmissions
   if (has('shan') && cnt('shan') >= 2)
     return 'secret';
-  if (has('yusra') && cnt('yusra') >= 3 && has('mara'))
+
+  // CONSPIRACY: must have logged 3+ of Yusra's fragments AND Mara's — full thread
+  if (cnt('yusra') >= 3 && cnt('mara') >= 3)
     return 'conspiracy';
-  if (has('osei') && has('twins') && !has('yusra'))
+
+  // ACCEPTANCE: must have logged 3+ of Osei AND 2+ of twins, without finding Yusra at all
+  if (cnt('osei') >= 3 && cnt('twins') >= 2 && !has('yusra'))
     return 'acceptance';
-  if ((has('yusra') && has('mara') && has('osei')) || L.length >= 3)
+
+  // AMBIGUOUS: found at least 3 distinct sources with meaningful depth in each
+  if (
+    [has('mara'), has('osei'), has('yusra'), has('twins'), has('beacon')].filter(Boolean).length >= 3 &&
+    L.length >= 6
+  )
     return 'ambiguous';
-  if (has('beacon') && L.length === 1)
+
+  // BEACON ONLY: logged the beacon and nothing else at all
+  if (has('beacon') && !has('mara') && !has('osei') && !has('yusra') && !has('twins') && !has('shan') && cnt('beacon') >= 2)
     return 'beacon_only';
+
   return null;
 }
+
+// Currently viewed ending detail (for the click-through modal)
+let viewingEndingId = null;
 
 function updateEnding() {
   const eid  = getEndingId();
   const cont = document.getElementById('ending-content');
 
   if (!eid) {
+    // No ending earned yet — show locked state with progress hints
+    const L   = ST.logged;
+    const has = id => L.some(f => f.signalId === id);
+    const cnt = id => L.filter(f => f.signalId === id).length;
+
+    const hints = [];
+    if (!has('mara'))                      hints.push('There is a scientist on the dial. Keep scanning.');
+    if (has('mara') && cnt('mara') < 3)    hints.push('Mara Chen has more to say. Advance days.');
+    if (!has('yusra') && has('mara'))      hints.push('Mara mentioned someone on 103.4.');
+    if (!has('osei'))                      hints.push('Someone else is broadcasting — a different kind of voice.');
+    if (!has('twins') && ST.day < 20)      hints.push('Some signals only appear later. Keep advancing.');
+    if (has('beacon') && cnt('beacon') < 2) hints.push('The beacon changes over time. Advance more days and check 91.7 again.');
+
+    const hintHtml = hints.length
+      ? '<div style="font-size:11px;color:var(--text-dim);line-height:2.2;margin-top:16px;">' +
+        hints.slice(0, 2).map(h => '&#8250; ' + h).join('<br>') + '</div>'
+      : '';
+
     cont.innerHTML =
       '<div class="ending-locked">' +
-      '<div style="font-family:var(--display);font-size:28px;color:var(--text-dim);letter-spacing:4px;margin-bottom:16px;">NO CONCLUSION</div>' +
-      '<div style="font-size:12px;line-height:2.2;">You haven\'t logged enough transmissions.<br>Return to the radio. Keep scanning.</div>' +
+      '<div style="font-family:var(--display);font-size:28px;color:var(--text-dim);letter-spacing:4px;margin-bottom:12px;">NO CONCLUSION</div>' +
+      '<div style="font-size:12px;line-height:2.2;color:var(--text-dim);">You haven\'t logged enough transmissions.<br>Return to the radio. Keep scanning.</div>' +
+      hintHtml +
+      '<div style="margin-top:28px;padding-top:16px;border-top:1px solid var(--border);">' +
+      '<button class="btn danger" onclick="showResetConfirm()" style="font-size:11px;">[ RESET ALL PROGRESS ]</button>' +
+      '</div>' +
       '</div>';
     return;
   }
 
   if (!ST.achieved.includes(eid)) ST.achieved.push(eid);
+  saveState();
 
-  const e      = ENDINGS[eid];
   const allIds = Object.keys(ENDINGS);
 
-  cont.innerHTML =
-    '<div style="margin-bottom:16px;">' +
+  // Build the endings discovery grid — only show detail for achieved ones
+  const gridHtml =
+    '<div style="margin-bottom:20px;">' +
     '<div style="font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-bottom:10px;">' +
-    'ENDINGS DISCOVERED — ' + ST.achieved.length + '/' + allIds.length + '</div>' +
+    'CONCLUSIONS DISCOVERED — ' + ST.achieved.length + '/' + allIds.length + '</div>' +
     '<div class="endings-grid">' +
     allIds.map(id => {
-      const ae = ST.achieved.includes(id);
+      const ae  = ST.achieved.includes(id);
       const cur = id === eid;
       const en  = ENDINGS[id];
+      const clickAttr = ae ? ' onclick="viewEndingDetail(\'' + id + '\')" style="cursor:pointer;"' : '';
       return (
-        '<div class="ending-mini ' + (ae ? 'achieved ' : '') + (cur ? 'current-run' : '') + '">' +
+        '<div class="ending-mini ' + (ae ? 'achieved ' : '') + (cur ? 'current-run' : '') + '"' + clickAttr + '>' +
         '<div class="ending-mini-title" style="color:' + (ae ? en.color : 'var(--text-dim)') + '">' +
         (ae ? en.title : '???') + '</div>' +
-        '<div class="ending-mini-status">' + (cur ? '◆ THIS RUN' : ae ? 'found' : 'locked') + '</div>' +
+        '<div class="ending-mini-status">' + (cur ? '&#9670; THIS RUN' : ae ? 'click to review' : 'locked') + '</div>' +
         '</div>'
       );
     }).join('') +
-    '</div></div>' +
-    '<div class="ending-card">' +
+    '</div></div>';
+
+  // Current run ending card
+  const e = ENDINGS[eid];
+  const cardHtml =
+    '<div class="ending-card" id="ending-main-card">' +
     '<div class="ending-title" style="color:' + e.color + '">' + e.title + '</div>' +
     '<div class="ending-condition">— ' + e.condition + '</div>' +
     '<div class="ending-body">' + e.body + '</div>' +
     '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:10px;color:var(--text-dim);">' +
     'FRAGMENTS: ' + ST.logged.length + ' // SOURCES: ' + Object.keys(ST.discovered).length + '/6 // ' +
     'DAYS: ' + ST.day + ' // RUN: ' + ST.run +
-    '</div></div>' +
-    '<div style="text-align:center;margin-top:14px;display:flex;gap:10px;justify-content:center;">' +
+    '</div></div>';
+
+  // Action buttons row — NG+ or return-to-base depending on current mode
+  const actionHtml =
+    '<div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
     '<button class="btn" onclick="switchTab(\'archive\')">[ VIEW ARCHIVE ]</button>' +
-    '<button class="btn danger" onclick="showNGConfirm()">[ NEW GAME+ ]</button>' +
+    (ST.ng
+      ? '<button class="btn danger" onclick="showBaseGameConfirm()">[ RETURN TO BASE GAME ]</button>'
+      : '<button class="btn secret" onclick="showNGConfirm()">[ NEW GAME+ ]</button>'
+    ) +
+    '<button class="btn danger" onclick="showResetConfirm()">[ RESET ALL PROGRESS ]</button>' +
     '</div>';
+
+  cont.innerHTML = gridHtml + cardHtml + actionHtml;
+}
+
+// Open a modal showing the full ending text + all logged fragments from that run
+function viewEndingDetail(eid) {
+  viewingEndingId = eid;
+  const e = ENDINGS[eid];
+
+  // Gather logged fragments relevant to this ending's run(s)
+  // Since achievements persist across runs, show all logged fragments current run for now
+  // plus the ending text in full
+  const modal = document.getElementById('ending-detail-modal');
+  const body  = document.getElementById('ending-detail-body');
+
+  body.innerHTML =
+    '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">' +
+    '<div class="ending-title" style="color:' + e.color + ';font-size:26px;">' + e.title + '</div>' +
+    '<button class="btn" onclick="closeEndingDetail()">[ CLOSE ]</button>' +
+    '</div>' +
+    '<div class="ending-condition" style="margin-bottom:16px;">— ' + e.condition + '</div>' +
+    '<div class="ending-body" style="margin-bottom:24px;">' + e.body + '</div>' +
+    '<div style="border-top:1px solid var(--border);padding-top:16px;">' +
+    '<div style="font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:12px;">YOUR LOGGED TRANSMISSIONS — THIS RUN</div>' +
+    (ST.logged.length
+      ? ST.logged.map(f =>
+          '<div style="background:var(--bg2);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;">' +
+          '<div class="arc-source ' + f.css + '" style="margin-bottom:4px;">' + f.source + ' — Day ' + f.day + '</div>' +
+          '<div style="font-size:12px;color:var(--text-bright);line-height:1.7;font-style:italic;white-space:pre-wrap;">' +
+          f.text +
+          '</div>' +
+          (f.refs && f.refs.length ? '<div class="arc-refs" style="margin-top:6px;">&#8627; ' + f.refs.join(', ') + '</div>' : '') +
+          '</div>'
+        ).join('')
+      : '<div style="color:var(--text-dim);font-size:12px;">No fragments logged this run.</div>'
+    ) +
+    '</div>';
+
+  modal.classList.add('show');
+}
+
+function closeEndingDetail() {
+  document.getElementById('ending-detail-modal').classList.remove('show');
+  viewingEndingId = null;
 }
 
 // ============================================================
@@ -1299,7 +1396,7 @@ function renderJournal() {
     return;
   }
 
-  g.innerHTML = JOURNAL.map(run => {
+  g.innerHTML = JOURNAL.map((run, idx) => {
     const e     = run.endingId ? ENDINGS[run.endingId] : null;
     const notes = [];
     if (run.mara)  notes.push('Found Mara Chen — followed the science.');
@@ -1309,30 +1406,66 @@ function renderJournal() {
     if (run.shan)  notes.push('Found the hidden frequency. Shan was routing in the dark.');
     if (!notes.length) notes.push('Listened only to the beacon. Nothing else.');
 
+    // Fragments logged in this specific run (stored when archiving)
+    const runFrags = run.loggedFragments || [];
+
     return (
       '<div class="journal-card">' +
       '<div class="journal-run-title">RUN ' + run.run + (run.ng ? ' [NG+]' : '') + '</div>' +
       '<div class="journal-ending" style="color:' + (e ? e.color : 'var(--text-dim)') + '">' +
       (e ? e.title : 'NO CONCLUSION') + '</div>' +
-      '<div class="journal-stats">Days: ' + run.day + ' &nbsp; Fragments: ' + run.frags +
-      ' &nbsp; Sources: ' + run.sources + '/6<br>Secret found: ' + (run.shan ? 'YES ◆' : 'no') + '</div>' +
-      '<div class="journal-notes">' + notes.join('<br>') + '</div>' +
+      '<div class="journal-stats">' +
+      'Days: ' + run.day + ' &nbsp; Fragments: ' + run.frags + ' &nbsp; Sources: ' + run.sources + '/6<br>' +
+      'Secret found: ' + (run.shan ? 'YES &#9670;' : 'no') +
+      '</div>' +
+      '<div class="journal-notes" id="journal-notes-' + idx + '">' + notes.join('<br>') + '</div>' +
+      (runFrags.length
+        ? '<div id="journal-frags-' + idx + '" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">' +
+          runFrags.map(f =>
+            '<div style="margin-bottom:10px;">' +
+            '<div class="arc-source ' + f.css + '" style="font-size:10px;letter-spacing:1px;margin-bottom:3px;">' + f.source + ' — Day ' + f.day + '</div>' +
+            '<div style="font-size:11px;color:var(--text-bright);line-height:1.6;font-style:italic;white-space:pre-wrap;">' + f.text + '</div>' +
+            '</div>'
+          ).join('') +
+          '</div>' +
+          '<button class="btn" id="journal-more-btn-' + idx + '" ' +
+          'onclick="toggleJournalFrags(' + idx + ')" style="margin-top:10px;font-size:10px;width:100%;">' +
+          '[ VIEW ' + runFrags.length + ' LOGGED FRAGMENTS ]' +
+          '</button>'
+        : ''
+      ) +
       '</div>'
     );
   }).join('');
 }
 
+function toggleJournalFrags(idx) {
+  const el  = document.getElementById('journal-frags-' + idx);
+  const btn = document.getElementById('journal-more-btn-' + idx);
+  const run = JOURNAL[idx];
+  if (!el) return;
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'block' : 'none';
+  btn.textContent  = isHidden
+    ? '[ HIDE FRAGMENTS ]'
+    : '[ VIEW ' + (run.loggedFragments || []).length + ' LOGGED FRAGMENTS ]';
+}
+
 // ============================================================
-// NEW GAME+
+// NEW GAME+ / BASE GAME RETURN
 // ============================================================
 function showNGConfirm() {
   document.getElementById('ng-confirm').classList.add('show');
 }
 
+function showBaseGameConfirm() {
+  document.getElementById('basegame-confirm').classList.add('show');
+}
+
 function confirmNewGame() {
   document.getElementById('ng-confirm').classList.remove('show');
 
-  // Archive this run to the journal
+  // Archive this run to the journal — include full logged fragments for review
   JOURNAL.push({
     run:     ST.run,
     ng:      ST.ng,
@@ -1340,6 +1473,7 @@ function confirmNewGame() {
     endingId: getEndingId(),
     frags:   ST.logged.length,
     sources: Object.keys(ST.discovered).length,
+    loggedFragments: [...ST.logged], // full fragment objects for journal detail view
     mara:    ST.logged.some(f => f.signalId === 'mara'),
     osei:    ST.logged.some(f => f.signalId === 'osei'),
     yusra:   ST.logged.some(f => f.signalId === 'yusra'),
@@ -1347,10 +1481,35 @@ function confirmNewGame() {
     shan:    ST.logged.some(f => f.signalId === 'shan'),
   });
 
-  // Carry over audio nodes and achievements; reset everything else
-  const prev = [...ST.achieved];
-  const ac   = ST.audioCtx;
-  const gn   = ST.gainNode;
+  startNewRun(true);
+}
+
+function confirmBaseGame() {
+  document.getElementById('basegame-confirm').classList.remove('show');
+
+  // Archive current run first
+  JOURNAL.push({
+    run:     ST.run,
+    ng:      ST.ng,
+    day:     ST.day,
+    endingId: getEndingId(),
+    frags:   ST.logged.length,
+    sources: Object.keys(ST.discovered).length,
+    loggedFragments: [...ST.logged],
+    mara:    ST.logged.some(f => f.signalId === 'mara'),
+    osei:    ST.logged.some(f => f.signalId === 'osei'),
+    yusra:   ST.logged.some(f => f.signalId === 'yusra'),
+    twins:   ST.logged.some(f => f.signalId === 'twins'),
+    shan:    ST.logged.some(f => f.signalId === 'shan'),
+  });
+
+  startNewRun(false); // ng = false — return to base game
+}
+
+function startNewRun(isNG) {
+  const prev   = [...ST.achieved];
+  const ac     = ST.audioCtx;
+  const gn     = ST.gainNode;
   const newRun = ST.run + 1;
 
   ST = {
@@ -1364,16 +1523,15 @@ function confirmNewGame() {
     audioCtx: ac,
     gainNode: gn,
     run: newRun,
-    ng: true,
+    ng: isNG,
     achieved: prev,
   };
 
-  // Reset UI elements
   document.getElementById('day-display').textContent  = 1;
   document.getElementById('status-day').textContent   = 1;
   document.getElementById('freq-display').textContent = '88.0';
   document.getElementById('dial').value               = 880;
-  document.getElementById('ng-badge').style.display   = '';
+  document.getElementById('ng-badge').style.display   = isNG ? '' : 'none';
   document.getElementById('ng-btn').style.display     = 'none';
 
   showStatic();
@@ -1384,6 +1542,46 @@ function confirmNewGame() {
   renderJournal();
   switchTab('radio');
   saveState();
+}
+
+// ============================================================
+// RESET ALL PROGRESS
+// ============================================================
+function showResetConfirm() {
+  document.getElementById('reset-confirm').classList.add('show');
+}
+
+function confirmReset() {
+  document.getElementById('reset-confirm').classList.remove('show');
+  localStorage.removeItem('ds_v3');
+
+  const ac = ST.audioCtx;
+  const gn = ST.gainNode;
+
+  ST = {
+    day: 1, currentFreq: 88.0, discovered: {}, logged: [],
+    curSigId: null, curFragText: null,
+    staticOn: true, audioCtx: ac, gainNode: gn,
+    run: 1, ng: false, achieved: [],
+  };
+  JOURNAL = [];
+  archFilter = 'all';
+  archView   = 'grid';
+
+  document.getElementById('day-display').textContent  = 1;
+  document.getElementById('status-day').textContent   = 1;
+  document.getElementById('freq-display').textContent = '88.0';
+  document.getElementById('dial').value               = 880;
+  document.getElementById('ng-badge').style.display   = 'none';
+  document.getElementById('ng-btn').style.display     = 'none';
+
+  showStatic();
+  document.getElementById('log-row').style.display = 'none';
+  updateKnown();
+  updateStats();
+  updateEnding();
+  renderJournal();
+  switchTab('radio');
 }
 
 // ============================================================
@@ -1429,7 +1627,7 @@ function loadSave() {
     JOURNAL = saved.JOURNAL || [];
     document.getElementById('day-display').textContent = ST.day;
     document.getElementById('status-day').textContent  = ST.day;
-    if (ST.ng) document.getElementById('ng-badge').style.display = '';
+    document.getElementById('ng-badge').style.display = ST.ng ? '' : 'none';
     if (getEndingId()) document.getElementById('ng-btn').style.display = '';
     updateKnown();
     updateStats();
