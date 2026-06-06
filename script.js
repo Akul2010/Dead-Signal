@@ -588,6 +588,14 @@ function getEndingId() {
 
 // Renders the Conclusions dashboard
 function updateEnding() {
+  const eid = getEndingId();
+
+  // Unlock ending globally if not already tracked (do this BEFORE checking if ending-content exists)
+  if (eid && !gameState.achieved.includes(eid)) {
+    gameState.achieved.push(eid);
+    saveState();
+  }
+
   const cont = document.getElementById('ending-content');
   if (!cont) return;
 
@@ -596,8 +604,6 @@ function updateEnding() {
     viewEndingLogs(gameState.viewingEndingId);
     return;
   }
-
-  const eid = getEndingId();
 
   if (!eid) {
     cont.innerHTML =
@@ -609,12 +615,6 @@ function updateEnding() {
       '<button class="btn danger" onclick="showResetConfirm()">[ RESET ALL PROGRESS ]</button>' +
       '</div>';
     return;
-  }
-
-  // Unlock ending globally if not already tracked
-  if (!gameState.achieved.includes(eid)) {
-    gameState.achieved.push(eid);
-    saveState();
   }
 
   const e = ENDINGS[eid];
