@@ -156,10 +156,10 @@ const SIG = {
       {
         day: 18,
         text:
-          "Day 18. The government broadcast on 91.7 changed its wording on day 13. " +
-          "I logged both versions. It changed again on day 21 — I'm anticipating that now " +
-          "and logging every iteration. 'Voluntary' became 'mandatory.' Then 'recommended " +
-          "indefinitely.' Then 'comply.'\n\n" +
+          "Day 18. The government broadcast on 91.7 changed its wording on day 6. " +
+          "I logged both the previous, and the new versions. It changed again on day 13 — I'm anticipating that now " +
+          "and logging every new iteration. 'Voluntary' became 'mandatory.' Then 'recommended " +
+          "indefinitely.'\n\n" +
           "Someone is still running that machine. They're not warning us. They're steering " +
           "us. Whoever is tending that broadcast knows something we don't.\n\n" +
           "I've been corresponding with a priest named Osei on 94.6. He thinks this is " +
@@ -213,10 +213,10 @@ const SIG = {
           "Day 20. The twins on 117.2 — I've been listening to them since day 23 of the " +
           "first run. I have a hypothesis now.\n\n" +
           "LULL attenuates the learned reward response to proximity. Children who haven't " +
-          "fully formed that pathway — still in the developmental plastic window — are below " +
-          "the attenuation threshold. The compound has nothing to bind to.\n\n" +
-          "If that's right, the children are the control group. They're what we were before. " +
-          "They're also proof the effect isn't permanent for everyone. There may be a recovery window.\n\n" +
+          "fully expanded that pathway — still in the critical period — are below " +
+          "the attenuation threshold. The compound has much less to bind to in children than in adults.\n\n" +
+          "If that's right, then the children are the control group. They're what we were before. " +
+          "They're also proof that the effect isn't permanent for everyone. There may be a recovery window.\n\n" +
           "I should have been a better scientist the first time. I'm trying now.",
       },
     ],
@@ -351,10 +351,10 @@ const SIG = {
           "Day 5. If you found this frequency someone pointed you here, which means " +
           "you're already asking the right questions.\n\n" +
           "I was a researcher at VALE Research Partners, contracted to DARPA's behavioral " +
-          "disruption division. The project was designated LULL. The theory: synthesize a " +
+          "disruption division. The project was designated LULL. The goal: synthesize a " +
           "compound that suppresses the neurological reward response triggered by physical " +
-          "proximity to other humans. The dopamine cascade from a handshake, a crowd, a " +
-          "shared meal. Make togetherness feel optional.\n\n" +
+          "proximity to, and interaction with other humans. The dopamine cascade from a " +
+          "handshake, a crowd, a shared meal. Make togetherness feel optional.\n\n" +
           "We did. It worked. And on day 8 of the field trial, three years before the " +
           "Quieting, someone in my own lab made a decision I did not authorize and cannot forgive.",
       },
@@ -364,9 +364,9 @@ const SIG = {
           "Day 8. The compound was never supposed to leave the lab. Someone on my team " +
           "modified the molecular structure for airborne persistence. Without my knowledge. " +
           "Without ethics review. They called it LULL-ATMOSPHERIC.\n\n" +
-          "They released it in a single city as a proof of concept. Day 43 of that test, " +
-          "wind patterns carried it over three national borders. They lost containment. " +
-          "They never disclosed this to anyone.\n\n" +
+          "They released it into a single city as a proof of concept. Day 43 of that test, " +
+          "it clung to cold ocean currents, which carried it over three national borders. " +
+          "They lost containment. They never disclosed this to anyone.\n\n" +
           "That was fourteen months before the day you're listening on.",
       },
       {
@@ -374,8 +374,7 @@ const SIG = {
         text:
           "Day 14. The broadcast on 91.7 is a behavioral management protocol, not a public " +
           "health advisory. I've been tracking the language changes systematically. " +
-          "'Voluntary' on day 1. 'Mandatory' by day 6. 'Recommended indefinitely' by day 13. " +
-          "'Comply' by day 21.\n\n" +
+          "'Voluntary' on day 1. 'Mandatory' by day 6. 'Recommended indefinitely' by day 13.\n\n" +
           "Someone within the original project team is still running that broadcast. They " +
           "know what happened. They chose to manage the outcome rather than disclose it.\n\n" +
           "There is a counteragent — VALE-9. I don't have production capacity. " +
@@ -386,10 +385,15 @@ const SIG = {
         text:
           "Day 20. I've been monitoring 117.2. Two children — twins, they say. " +
           "They don't seem affected the way adults are.\n\n" +
-          "Hypothesis: LULL attenuates learned proximity reward pathways. Children still " +
-          "in the developmental plastic window haven't fully formed those pathways. " +
-          "The compound has a reduced binding surface. They may be functionally immune.\n\n" +
-          "Implication: the effect may not be permanent for everyone. If reward pathways " +
+          "Hypothesis: LULL attenuates dopamine-producing neurons in the Ventral Tegmental " +
+          "Area of the Mesocorticolimbic Dopamine System. Children still in the critical period" +
+          "haven't fully expanded those pathways, leaving fewer mature cell receptors available " +
+          "for the compound to bind to. The compound has a reduced binding surface. They may be " +
+          "functionally immune. For now.\n\n" +
+          "Implication: The structural damage may affect age groups differently. If VTA pathways " +
+          "require fully mature neuroplasticity to succumb, then newborns and young children with " +
+          "underdeveloped brains might be naturally resilient - meaning they are functionally immune. " +
+          "For now. This could also mean that the effect may not be permanent for everyone. If reward pathways " +
           "can be rebuilt through sustained counter-stimulus — forced proximity, even without " +
           "reward, re-sensitizing over time — there may be a recovery window.\n\n" +
           "The children on 117.2 are already doing this. Deliberately, I think. They're showing us something.",
@@ -425,12 +429,12 @@ const SIG = {
         day: 15,
         text:
           "Day 15. The counteragent — VALE-9. I need to describe it clearly in case I go silent.\n\n" +
-          "It's a selective re-sensitization compound. It doesn't reverse LULL directly — it " +
-          "reopens the proximity reward pathway so sustained human contact can re-train the " +
-          "response naturally. Approximately 14 days of consistent close human contact to " +
-          "complete re-sensitization. Synthesizable from precursors available in any " +
-          "moderately equipped lab.\n\n" +
-          "Formula sequence begins: C14H21N3O2 — chelated with [signal degrades here]\n\n" +
+          "It's a lipophilic, small-molecule TrkB agonist. It doesn't reverse LULL directly — it " +
+          "crosses the blood-brain barrier and mimics BDNF to signal damaged VTA neurons to" +
+          "regenerate. Expect approximately 14 days of cellular proliferation to restore the " +
+          "reward pathway, with extreme, instant side effects during growth. Synthesizable " +
+          "from precursors available in any moderately equipped lab.\n\n" +
+          "Formula sequence begins: C14H21N3O2 — neutralized with [signal degrades here]\n\n" +
           "I'll try to retransmit the complete sequence. Stay on 103.4.",
       },
       {
