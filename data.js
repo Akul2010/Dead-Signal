@@ -430,11 +430,11 @@ const SIG = {
         text:
           "Day 15. The counteragent — VALE-9. I need to describe it clearly in case I go silent.\n\n" +
           "It's a lipophilic, small-molecule TrkB agonist. It doesn't reverse LULL directly — it " +
-          "crosses the blood-brain barrier and mimics BDNF to signal damaged VTA neurons to" +
+          "crosses the blood-brain barrier and mimics BDNF to signal damaged VTA neurons to " +
           "regenerate. Expect approximately 14 days of cellular proliferation to restore the " +
           "reward pathway, with extreme, instant side effects during growth. Synthesizable " +
           "from precursors available in any moderately equipped lab.\n\n" +
-          "Formula sequence begins: C14H21N3O2 — neutralized with [signal degrades here]\n\n" +
+          "Formula sequence begins: C17H15NO4 — neutralized with [signal degrades here]\n\n" +
           "I'll try to retransmit the complete sequence. Stay on 103.4.",
       },
       {
